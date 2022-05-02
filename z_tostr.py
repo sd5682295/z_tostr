@@ -1,3 +1,7 @@
+import uuid
+
+from api.public.snap import snap_t
+
 
 class data2str:
     def __init__(self, input_data, rules):
