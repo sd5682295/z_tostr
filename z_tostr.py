@@ -1,10 +1,11 @@
 import uuid
 
-from api.public.snap import snap_t
-
 
 class data2str:
     def __init__(self, input_data, rules):
+        self.value_snap_list = self.value_chain.snip_list
+        self.value_dict = self.value_chain.dict
+        self.value_chain = toChain(self.value, self.__dict__)
         easy_rule = ['start', 'end', 'each_end', 'each_start']
         nomal_rule = ['bef_each_start', 'aft_each_start', 'bef_each_end', 'aft_each_end']
         hard_rule = ['insert_data']
@@ -52,9 +53,6 @@ class data2str:
             self.insert_data = rules.get('insert_data')
         self.value = input_data
 
-    def add(self, l_data, r_data):
-        return ''.join([l_data, r_data])
-
     @property
     def str(self):
         if self.degree == 'easy':
@@ -72,40 +70,33 @@ class data2str:
                 bef_each_end = ""
                 aft_each_end = ""
 
-                if  self.bef_each_start.get(f'{i}') != None:
-                    bef_each_start =  self.bef_each_start.get(f'{i}')
+                if self.bef_each_start.get(f'{i}') is not None:
+                    bef_each_start = self.bef_each_start.get(f'{i}')
 
-                if  self.aft_each_start.get(f'{i}') != None:
+                if self.aft_each_start.get(f'{i}') is not None:
                     aft_each_start = self.aft_each_start.get(f'{i}')
 
-                if  self.bef_each_end.get(f'{i}') != None:
+                if self.bef_each_end.get(f'{i}') is not None:
                     bef_each_end = self.bef_each_end.get(f'{i}')
 
-                if  self.aft_each_end.get(f'{i}') != None:
+                if self.aft_each_end.get(f'{i}') is not None:
                     aft_each_end = self.aft_each_end.get(f'{i}')
 
                 res_list.append(self.start)
 
-                res_list.append("".join([bef_each_start,self.each_start,
-                                         aft_each_start,self.value[i],bef_each_end,self.each_end,aft_each_end]))
+                res_list.append("".join([bef_each_start, self.each_start,
+                                         aft_each_start, self.value[i], bef_each_end, self.each_end, aft_each_end]))
                 res_list.append(self.end)
             res = "".join(res_list)
 
             return res
         elif self.degree == 'hard':
-            self.value_chain = toChain(self.value, self.__dict__)
-            self.value_dict = self.value_chain.dict
-            self.value_snap_list = self.value_chain.snip_list
             for i in self.insert_data:
-                self.value_chain.insert_data(self.insert_data[i],int(i))
+                self.value_chain.insert_data(self.insert_data[i], int(i))
             res = "".join([i['value'] for i in self.value_chain.new_list])
-
 
             return res
 
-        snap_t({'value_chain':self.value_chain.new_list,
-                'value_dict':self.value_dict,
-                'value_snap_list':self.value_snap_list},msg='------coding-------')
 
 class toChain:
     def __init__(self, data_list, orgi_dict):
@@ -126,7 +117,7 @@ class toChain:
             aft_each_start = ""
             bef_each_end = ""
             aft_each_end = ""
-            if self.bef_each_start != None and self.aft_each_start != None and self.bef_each_end != None and self.aft_each_end != None:
+            if self.bef_each_start is not None and self.aft_each_start is not None and self.bef_each_end != None and self.aft_each_end != None:
                 if f'{i}' in self.bef_each_start:
                     bef_each_start = self.bef_each_start[f'{i}']
                 if f'{i}' in self.aft_each_start:
@@ -137,12 +128,12 @@ class toChain:
                     aft_each_end = self.aft_each_end[f'{i}']
             # snap_t({'err':data_list},msg='--err--')
             self.res_dict[eid] = {'id': eid, 'value': "".join([bef_each_start,
-                                                              self.each_start,
-                                                              aft_each_start,
-                                                              data_list[i],
-                                                              bef_each_end,
-                                                              self.each_end,
-                                                              aft_each_end])}
+                                                               self.each_start,
+                                                               aft_each_start,
+                                                               data_list[i],
+                                                               bef_each_end,
+                                                               self.each_end,
+                                                               aft_each_end])}
             if self.tid == 'home':
                 self.fid = eid
                 self.res_dict[eid]['pid'] = 'home'
@@ -158,12 +149,12 @@ class toChain:
     def insert_data(self, inst_data, inst_index):
         if type(inst_data) == str:
             inst_data = [inst_data]
-        not_each = ['bef_each_start','bef_each_end','aft_each_start','aft_each_end']
+        not_each = ['bef_each_start', 'bef_each_end', 'aft_each_start', 'aft_each_end']
         inst_dict = {}
         for i in self.orgi_dict:
             if i not in not_each:
                 inst_dict[i] = self.orgi_dict[i]
-        inst_data = toChain(inst_data,inst_dict)
+        inst_data = toChain(inst_data, inst_dict)
         inst_data_dict = inst_data.dict
         inst_data_list = inst_data.snip_list
         first_data = inst_data_dict[inst_data_list[0]]
@@ -207,13 +198,12 @@ class toChain:
                 res.append(temp[-1]['id'])
         return res
 
-
     @property
     def dict(self):
         return self.res_dict
 
     @dict.setter
-    def dict(self,value):
+    def dict(self, value):
         self.res_dict = value
 
     @property
@@ -221,7 +211,7 @@ class toChain:
         return self.res_list
 
     @snip_list.setter
-    def snip_list(self,value):
+    def snip_list(self, value):
         self.res_list = value
 
     @property
@@ -231,4 +221,3 @@ class toChain:
     @first_id.setter
     def first_id(self, value):
         self.first_id = value
-
