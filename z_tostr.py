@@ -3,27 +3,28 @@ import uuid
 
 class data2str:
     def __init__(self, input_data, rules):
-        self.value_snap_list = self.value_chain.snip_list
-        self.value_dict = self.value_chain.dict
-        self.value_chain = toChain(self.value, self.__dict__)
+
         easy_rule = ['start', 'end', 'each_end', 'each_start']
         nomal_rule = ['bef_each_start', 'aft_each_start', 'bef_each_end', 'aft_each_end']
         hard_rule = ['insert_data']
         self.degree = 'easy'
-        # self.rules
-        for i in rules:
-            if i in hard_rule:
-                if self.degree != 'hard':
-                    self.degree = 'hard'
-            elif i in nomal_rule:
-                if self.degree == 'easy':
-                    self.degree = 'normal'
-            elif i in easy_rule:
-                if self.degree == 'easy':
-                    pass
-            else:
-                print('===', i, '===')
-                raise UserWarning(f'rule里{i}没有设置')
+        if rules == {}:
+            self.degree = 'easy'
+        else:
+            # print(rules)
+            for i in rules:
+                if i in hard_rule:
+                    if self.degree != 'hard':
+                        self.degree = 'hard'
+                elif i in nomal_rule:
+                    if self.degree == 'easy':
+                        self.degree = 'normal'
+                elif i in easy_rule:
+                    if self.degree == 'easy':
+                        pass
+                else:
+                    print('===', i, '===')
+                    raise UserWarning(f'rule里{i}没有设置')
         self.each_start = ""
         self.each_end = ""
         self.end = ""
@@ -55,6 +56,7 @@ class data2str:
 
     @property
     def str(self):
+
         if self.degree == 'easy':
             # print('easy')
             return "".join([self.start, self.each_start,
@@ -82,15 +84,19 @@ class data2str:
                 if self.aft_each_end.get(f'{i}') is not None:
                     aft_each_end = self.aft_each_end.get(f'{i}')
 
-                res_list.append(self.start)
+                # res_list.append(self.start)
 
                 res_list.append("".join([bef_each_start, self.each_start,
                                          aft_each_start, self.value[i], bef_each_end, self.each_end, aft_each_end]))
-                res_list.append(self.end)
+            res_list.append(self.end)
             res = "".join(res_list)
 
             return res
         elif self.degree == 'hard':
+
+            self.value_chain = toChain(self.value, self.__dict__)
+            self.value_snap_list = self.value_chain.snip_list
+            self.value_dict = self.value_chain.dict
             for i in self.insert_data:
                 self.value_chain.insert_data(self.insert_data[i], int(i))
             res = "".join([i['value'] for i in self.value_chain.new_list])
