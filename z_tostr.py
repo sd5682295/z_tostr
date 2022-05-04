@@ -1,4 +1,5 @@
 import uuid
+from pprint import pprint
 
 
 class data2str:
@@ -74,20 +75,30 @@ class data2str:
 
                 if self.bef_each_start.get(f'{i}') is not None:
                     bef_each_start = self.bef_each_start.get(f'{i}')
-
+                elif self.bef_each_start.get('*') is not None:
+                    bef_each_start = self.bef_each_start.get('*')
                 if self.aft_each_start.get(f'{i}') is not None:
                     aft_each_start = self.aft_each_start.get(f'{i}')
-
+                elif self.aft_each_start.get('*') is not None:
+                    aft_each_start = self.aft_each_start.get('*')
                 if self.bef_each_end.get(f'{i}') is not None:
                     bef_each_end = self.bef_each_end.get(f'{i}')
-
+                elif self.bef_each_end.get('*') is not None:
+                    bef_each_end = self.bef_each_end.get('*')
                 if self.aft_each_end.get(f'{i}') is not None:
                     aft_each_end = self.aft_each_end.get(f'{i}')
+                elif self.aft_each_end.get('*') is not None:
+                    aft_each_end = self.aft_each_end.get('*')
 
                 # res_list.append(self.start)
+                # print([bef_each_start, self.each_start,
+                #        aft_each_start, self.value[i], bef_each_end, self.each_end, aft_each_end])
 
                 res_list.append("".join([bef_each_start, self.each_start,
                                          aft_each_start, self.value[i], bef_each_end, self.each_end, aft_each_end]))
+                # print([bef_each_start, self.each_start,
+                #                          aft_each_start, self.value[i], bef_each_end, self.each_end, aft_each_end])
+                #
             res_list.append(self.end)
             res = "".join(res_list)
 
@@ -99,7 +110,8 @@ class data2str:
             self.value_dict = self.value_chain.dict
             for i in self.insert_data:
                 self.value_chain.insert_data(self.insert_data[i], int(i))
-            res = "".join([i['value'] for i in self.value_chain.new_list])
+            pprint(self.value_chain.new_list)
+            res = "".join([self.start]+[i['value'] for i in self.value_chain.new_list]+[self.end])
 
             return res
 
